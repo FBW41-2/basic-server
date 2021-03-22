@@ -1,9 +1,18 @@
 // import predefined http module from node
 const http = require('http');
 
+const messages = ["Hello", "World"]
+
 // listener that waits for requests
 const server = http.createServer((request, response) => {
-    response.write("<h1>Hello Browser</h1>")
+    response.write(`
+        <form method="GET" action="/">
+            <input type="text" name="message">
+        </form>
+    `)
+    messages.forEach(m => {
+        response.write(`<p>${m}</p>`)
+    })
     response.end()
 })
 

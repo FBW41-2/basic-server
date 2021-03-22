@@ -5,6 +5,12 @@ const messages = ["Hello", "World"]
 
 // listener that waits for requests
 const server = http.createServer((request, response) => {
+
+    const newMessage = request.url.split("=")[1]
+    if(newMessage){
+        messages.push(newMessage.replace(/\+/g, " "))
+    } 
+    response.setHeader('Content-Type', 'text/html');
     response.write(`
         <form method="GET" action="/">
             <input type="text" name="message">

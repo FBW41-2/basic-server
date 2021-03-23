@@ -1,22 +1,17 @@
 // import predefined http module from node
 const http = require('http')
+const axios = require('axios')
 
 const messages = ["Hello", "World"]
 
 let APIResult = {}
 
-http.request("http://dummy.restapiexample.com/api/v1/employee/1", response => {
-    let res = ''
+async function getEmployee() {
+    APIResult = await axios.get("http://dummy.restapiexample.com/api/v1/employee/1")
+    console.log(APIResult)
+}
 
-    response.on('data', chunk => {
-        res += chunk
-    })
-
-    response.on('end', () => {
-        APIResult = JSON.parse(res).data
-        console.log(APIResult.employee_name)
-    })
-}).end()
+getEmployee()
 
 // request callback function
 function processRequest(request, response) {

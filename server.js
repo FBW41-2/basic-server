@@ -19,7 +19,7 @@ function processRequest(request, response) {
     if(request.url == "/about"){
         response.write(`
             <h1>About</h1>
-            <p>Node server by Maxim</p>
+            <p>Node server by codeMergers(DCI)</p>
         `)
     } else if(request.url == "/api") {
         response.write(`

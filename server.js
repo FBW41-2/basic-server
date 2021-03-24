@@ -1,12 +1,15 @@
 const express = require('express')
 const axios = require('axios')
-const { response } = require('express')
-
+const cors = require('cors')
 const app = express()
 
+app.use(cors())
+app.use(express.json())
 app.use(express.urlencoded())
 
 const messages = ["Hello", "World"]
+
+let gameState = ""
 
 const users = [{
     name: "Maxim",
@@ -26,7 +29,6 @@ async function getEmployee() {
 //getEmployee()
 
 app.get("/users", (req, res) => {
-    res.setHeader("Access-Control-Allow-Origin", "*")
     res.json(users)
 })
 
@@ -76,8 +78,13 @@ app.get("/", (req, res) => {
 })
 
 app.get("/game", (req, res) => {
-    res.setHeader("Access-Control-Allow-Origin", "*")
-    res.json({"moveHistory":[[null,null,null,null,null,null,null,null,null],["X",null,null,null,null,null,null,null,null],["X","O",null,null,null,null,null,null,null]],"curMoveNum":3,"currentMove":["X","O",null,null,null,null,null,null,null],"player":"X"})
+    res.json(gameState)
+})
+
+app.post("/game", (req, res) => {
+    console.log("receive game", req.body)
+    gameState = req.body
+    res.json(gameState)
 })
 
 // start the server / wait for requests on port 8080

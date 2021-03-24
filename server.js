@@ -1,8 +1,20 @@
-// import predefined http module from node
-const http = require('http')
+const express = require('express')
 const axios = require('axios')
+const { response } = require('express')
+
+const app = express()
+
+app.use(express.urlencoded())
 
 const messages = ["Hello", "World"]
+
+const users = [{
+    name: "Maxim",
+    favourites: ["Cinderella", "Star Wars"]
+}, {
+    name: "Doven",
+    favourites: ["Ice Princess", "Transformers"]
+}]
 
 let APIResult = {}
 
@@ -11,42 +23,63 @@ async function getEmployee() {
     console.log(APIResult)
 }
 
-getEmployee()
+//getEmployee()
 
-// request callback function
-function processRequest(request, response) {
-    response.setHeader('Content-Type', 'text/html');
-    if(request.url == "/about"){
-        response.write(`
-            <h1>About</h1>
-            <p>Node server by codeMergers(DCI)</p>
-        `)
-    } else if(request.url == "/api") {
-        response.write(`
-            <h1>${APIResult.employee_name}</h1>
-            <p>Salary: ${APIResult.employee_salary}</p>
-        `)
-    } else {
-        const newMessage = request.url.split("=")[1]
-        if(newMessage){
-            messages.push(newMessage.replace(/\+/g, " "))
-        } 
-        response.write(`
-            <form method="GET" action="/">
-                <input type="text" name="message">
-            </form>
-        `)
-        messages.forEach(m => {
-            response.write(`<p>${m}</p>`)
-        })
-    }
-    
-    response.end()
-}
+app.get("/users", (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*")
+    res.json(users)
+})
 
-// listener that waits for requests
-const server = http.createServer(processRequest)
+// Receive POST request
+app.post("/users", (req, res) => {
+    console.log(req.body)
+    users.push({name: req.body.name, favourites: [req.body.favourites]})
+    res.redirect("/users")
+})
+
+app.get("/users/:name", (req, res) => {
+    const foundUser = users.find(user => user.name == req.params.name)
+    res.json(foundUser)
+})
+
+app.get("/search", (req, res) => {
+    res.json({result: `Are you looking for ${req.query.q}?`})
+})
+
+app.route("/about").get((request, response) => {
+    response.send(`
+        <h1>Welcome Express</h1>
+    `)
+})
+
+app.get("/api", (req, res) => {
+    res.send(`
+        <h1>${APIResult.employee_name}</h1>
+        <p>Salary: ${APIResult.employee_salary}</p>
+    `)
+})
+
+app.get("/", (req, res) => {
+    res.send(`
+        <form method="POST" action="/users">
+            <div>
+                Name:
+                <input type="text" name="name">
+            </div>
+            <div>
+                Favourites:
+                <input type="text" name="favourites">
+            </div>
+            <input type="submit">
+        </form>
+    `)
+})
+
+app.get("/game", (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*")
+    res.json({"moveHistory":[[null,null,null,null,null,null,null,null,null],["X",null,null,null,null,null,null,null,null],["X","O",null,null,null,null,null,null,null]],"curMoveNum":3,"currentMove":["X","O",null,null,null,null,null,null,null],"player":"X"})
+})
 
 // start the server / wait for requests on port 8080
 const port = process.env.PORT || process.argv[2] || 8080
-server.listen(port, null, () => console.log("server started on port " + port))
+app.listen(port, () => console.log("server started on port " + port))

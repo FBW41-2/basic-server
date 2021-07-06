@@ -28,6 +28,13 @@ async function getEmployee() {
 
 //getEmployee()
 
+app.post("/", (req, res) => {
+    for (const [key, value] of Object.entries(req.body)) {
+        res.write(`<p>${key}: <strong>${value}</strong></p>`)
+    }
+    res.end()
+})
+
 app.get("/users", (req, res) => {
     res.json(users)
 })
